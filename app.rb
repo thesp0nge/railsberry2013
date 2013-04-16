@@ -35,10 +35,17 @@ get '/login' do
 end
 
 post '/login' do
-  session[:logged]="admin" if params["login"]=="admin" and params["password"]=="admin"
-  erb :home if params["login"]=="admin" and params["password"]=="admin"
-  @message = "Wrong password for 'admin' user" if params["login"] == "admin" and params["password"] != "admin"
-  @message = "Unknown username #{params["login"]}" if params["login"] != "admin" and params["password"] != "admin"
+
+  ret = check_creds(params["login"], params["password"])
+
+
+  if ret == 0
+    session[:logged]=params["login"]
+    redirect '/home'
+  end
+
+  @message = "Wrong password for #{params["login"]} user" if ret == 1
+  @message = "Unknown username #{params["login"]}" if ret == -1
   erb :login
 end
 
@@ -50,8 +57,9 @@ end
 get '/home' do
   if session[:logged].nil?
     @message="You must login first"
-    erb :login
+    redirect '/login'
   end 
+  erb :home
 end
 
 get '/backend' do
@@ -77,74 +85,19 @@ get '/db' do
 
   erb :db
 end
+
+def check_creds(username, password)
+  ret = 0
+  users = File.readlines('creds.txt')
+  users.each do |u|
+    u=u.chomp
+    return 0 if u.split(':')[0] == username and u.split(':')[1] == password
+    return 1 if u.split(':')[0] == username and u.split(':')[1] != password
+  end
+
+  return -1
+end
 __END__
-
-@@hello 
-
-<!DOCTYPE html>
-
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Railsberry 2013 - broken app</title>
-  </head>
-  <body> 
-    <h1>Railsberry 2013 - broken app</h1>
-    <p>
-      A very basic XSS vulnerable page
-    </p>
-
-    <p>
-      Hello <%= @name %>
-    </p>
-  </body> 
-</html>
-
-@@login
-<!DOCTYPE html>
-
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Railsberry 2013 - broken app</title>
-  </head>
-  <body>
-    <h1>Railsberry 2013 - broken app</h1>
-    <p>
-      <%= @message %>
-    </p>
-    <form method="POST" action="/login">
-      <input type="text" name="login" placeholder="put your login here">
-      <input type="password" name="password" placeholder="and a password too">
-      <input type="submit" value="login"/>
-    </form>
-    <p>
-      <i>
-        This authentication mechanism is broken since it gives too much
-        information about what is wrong with user's secrets. A laconic "unknown
-        username or password" would be a better choice.
-      </i>
-    </p>
-    <p>
-      <i>
-        Moreover, there is also a XSS on the login parameter when you missed it
-        since the value is replayed on the error message without filtering.
-      </i>
-    </p>
-  </body>
-</html>
-
-@@home
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Railsberry 2013 - broken app</title>
-  </head>
-  <body>
-    <h1>Railsberry 2013 - broken app</h1>
-    <p>This is a completely broken web application used just for fun.</p>
-  </body>
-</html>
 
 @@log
 <html>

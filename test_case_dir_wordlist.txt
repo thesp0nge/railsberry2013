@@ -1,0 +1,26 @@
+# This is an example of urls dictionary
+# (C) 2013 - paolo@armoredcode.com
+# v20130415
+usr
+_vti_bin
+_log
+~log
+log
+users
+tmp
+temp
+css
+img
+images
+stylesheets
+js
+javascript
+bak
+backup
+trash
+Trash
+old
+Old
+Oldies
+~root
+

@@ -1,0 +1,28 @@
+<div class="row">
+  <div class="span8">
+    <p>
+      <%= @message %>
+    </p>
+
+    <form class="form-inline" method="POST" action="/login" >
+      <input type="text" class="input" placeholder="put your login here" name="login">
+      <input type="password" class="input" placeholder="and a password too" name="password">
+      <button type="submit" class="btn">Sign in</button>
+    </form>
+
+    <p>
+      <i>
+        This authentication mechanism is broken since it gives too much
+        information about what is wrong with user's secrets. A laconic "unknown
+        username or password" would be a better choice.
+      </i>
+    </p>
+    <p>
+      <i>
+        Moreover, there is also a XSS on the login parameter when you missed it
+        since the value is replayed on the error message without filtering.
+      </i>
+    </p>
+  </div>
+</div>
+
