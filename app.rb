@@ -88,7 +88,7 @@ end
 
 def check_creds(username, password)
   ret = 0
-  users = File.readlines('creds.txt')
+  users = File.readlines('db/creds.txt')
   users.each do |u|
     u=u.chomp
     return 0 if u.split(':')[0] == username and u.split(':')[1] == password
